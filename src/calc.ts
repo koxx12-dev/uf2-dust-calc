@@ -168,10 +168,10 @@ const questions: PromptObject<string>[] = [
 
 function getDustToNextLevel(level: number) {
   if (level < 100) {
-    console.log(`${level+1}: ${levelGates[level]}`);
+    // console.log(`${level+1}: ${levelGates[level]}`);
     return levelGates[level];
   } else {
-    console.log(`${level+1}: ${(Math.pow(level+1, 3.3)*1.3)-4500000}`);
+    // console.log(`${level+1}: ${(Math.pow(level+1, 3.3)*1.3)-4500000}`);
     return (Math.pow(level+1, 3.3)*1.3)-4500000
   }
 }
@@ -233,13 +233,13 @@ async function waitForEnter() {
       });
 
       if (nextEnemy) {
-        console.log(`Killing ${nextEnemy.name} at level ${currentLevel} for ${nextEnemy.dust} dust and ${nextEnemy.gems} gems`);
+        // console.log(`Killing ${nextEnemy.name} at level ${currentLevel} for ${nextEnemy.dust} dust and ${nextEnemy.gems} gems`);
         bosses.push(nextEnemy);
         currentDust += nextEnemy.dust;
-        console.log(`Current dust: ${currentDust}`);
+        // console.log(`Current dust: ${currentDust}`);
         while (getDustToNextLevel(currentLevel) <= currentDust) {
           currentLevel++;
-          console.log(`Leveling up to ${currentLevel}`);
+          // console.log(`Leveling up to ${currentLevel}`);
         }
       } else {
         console.error(bgRed(`No enemy found for level ${currentLevel}`));
