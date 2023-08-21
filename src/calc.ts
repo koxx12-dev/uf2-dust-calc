@@ -126,7 +126,7 @@ var levelGates = [
     750000,//100
 ];
 
-// prompts.inject([1, 0, 60, 750000, 'fastest'])
+// prompts.inject([1, 0, 0, 351, 'custom'])
 
 const questions: PromptObject<string>[] = [
   {
@@ -165,6 +165,12 @@ const questions: PromptObject<string>[] = [
     ],
   }
 ]
+
+function debugPrint(message: any) {
+  if (process.env.DEBUG) {
+    console.log(message)
+  }
+}
 
 function getDustToNextLevel(level: number) {
   if (level < 100) {
@@ -226,20 +232,25 @@ async function waitForEnter() {
     while (currentDust < targetDust) {
       var nextEnemy: Enemy | undefined;
       
+      debugPrint(magenta(`\nCurrent level: ${yellow(currentLevel)}`));
+
       result.forEach(boss => {
         if (boss.level <= currentLevel && (!nextEnemy || nextEnemy.dust < boss.dust) && boss.timelines <= timelines) {
           nextEnemy = boss;
         }
+        debugPrint(green(`Boss ${yellow(boss.name)}, (${yellow((boss.level <= currentLevel).toString())}, ${yellow((boss.timelines <= timelines).toString())})`));
       });
 
       if (nextEnemy) {
+        debugPrint(magenta(`Chose ${yellow(nextEnemy.name)}`))
         // console.log(`Killing ${nextEnemy.name} at level ${currentLevel} for ${nextEnemy.dust} dust and ${nextEnemy.gems} gems`);
         bosses.push(nextEnemy);
         currentDust += nextEnemy.dust;
-        // console.log(`Current dust: ${currentDust}`);
+        debugPrint(magenta(`Current dust: ${yellow(currentDust)}, dust to next level: ${yellow(getDustToNextLevel(currentLevel))}`));
         while (getDustToNextLevel(currentLevel) <= currentDust) {
           currentLevel++;
-          // console.log(`Leveling up to ${currentLevel}`);
+          debugPrint(magenta(`Leveling up to ${yellow(currentLevel)}`));
+          debugPrint(magenta(`Current dust: ${yellow(currentDust)}, dust to next level: ${yellow(getDustToNextLevel(currentLevel))}`));
         }
       } else {
         console.error(bgRed(`No enemy found for level ${currentLevel}`));
