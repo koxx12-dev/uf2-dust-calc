@@ -1,0 +1,15 @@
+{
+  "tasks": {
+    "run": "deno run src/main.ts",
+    "debug": "deno run --allow-read=bundles/. src/main.ts --dev --debug",
+    "dev": "deno run --allow-read=bundles/. src/main.ts --dev",
+    "bundle": "deno run --allow-read=. --allow-write=. bundle.ts",
+    "build": "deno compile --output=uf2-dust-calc src/main.ts --allow-read=bosses.csv --allow-net"
+  },
+  "imports": {
+    "colors": "https://deno.land/std@0.199.0/fmt/colors.ts",
+    "prompts": "npm:prompts@^2.4.2",
+    "csv": "https://deno.land/std@0.199.0/csv/mod.ts",
+    "bundlee": "https://deno.land/x/bundlee@0.9.4/mod.ts"
+  }
+}
