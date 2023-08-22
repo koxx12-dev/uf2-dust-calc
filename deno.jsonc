@@ -1,10 +1,10 @@
 {
   "tasks": {
-    "run": "deno run src/main.ts",
-    "debug": "deno run --allow-read=bundles/. src/main.ts --dev --debug",
-    "dev": "deno run --allow-read=bundles/. src/main.ts --dev",
+    "run": "deno run --allow-read --allow-net src/main.ts",
+    "debug": "deno run --allow-read --allow-net src/main.ts --dev --debug",
+    "dev": "deno run --allow-read --allow-net src/main.ts --dev",
     "bundle": "deno run --allow-read=. --allow-write=. bundle.ts",
-    "build": "deno compile --output=uf2-dust-calc src/main.ts --allow-read=bosses.csv --allow-net"
+    "build": "deno compile --output=build/uf2-dust-calc src/main.ts --allow-read --allow-net"
   },
   "imports": {
     "colors": "https://deno.land/std@0.199.0/fmt/colors.ts",

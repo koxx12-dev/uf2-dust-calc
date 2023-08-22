@@ -139,7 +139,7 @@ const inDebug = Deno.args.includes("--debug");
 
 const staticData = inDev
   ? await Bundlee.load("bundles/data.json")
-  : await Bundlee.load("URL HERE SOON ISH", "fetch");
+  : await Bundlee.load("https://raw.githubusercontent.com/koxx12-dev/uf2-dust-calc/deno/bundles/data.json", "fetch");
 
 const questions = [
   {
@@ -179,17 +179,25 @@ const questions = [
   },
 ];
 
+async function fileExists(path: string): Promise<boolean> {
+  try {
+    return (await Deno.stat(path)).isFile
+  } catch {
+    return false
+  }
+}
+
 async function getData(path: string, local: boolean): Promise<string> {
   if (local) {
-    if (!await Deno.stat(csvFilePath)) {
-      console.error(bgRed(`No file found in "${path}"!`));
+    if (!(await fileExists(csvFilePath))) {
+      console.error(bgRed(`No file found in "${path}"`));
       await waitForEnter();
       Deno.exit();
     }
     return await Deno.readTextFile(path);
   } else {
     if (!staticData.has(path)) {
-      console.log(bgRed(`${path} is missing in static data!`));
+      console.log(bgRed(`${path} is missing in static data`));
       await waitForEnter();
       Deno.exit();
     }
@@ -231,7 +239,7 @@ let currentDust = response.dust;
 const timelines = response.timelines;
 const targetDust = response.targetDust;
 const csvFilePath = response.path == "custom"
-  ? `${Deno.cwd()}/data/bosses.csv`
+  ? `${Deno.cwd()}/bosses.csv`
   : `data/${response.path}.csv`;
 
 const fileContent = await getData(csvFilePath, response.path == "custom")
