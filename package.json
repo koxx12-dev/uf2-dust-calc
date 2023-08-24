@@ -2,24 +2,27 @@
   "name": "UF2-dust-calc",
   "version": "1.0.0",
   "description": "",
-  "bin": "dist/calc.js",
+  "bin": "dist/main.js",
   "scripts": {
-    "ts": "tsc",
-    "start": "node dist/calc.js",
-    "copy": "pnpm clean-data && shx cp -r data dist/",
-    "dev-debug": "pnpm ts && pnpm copy && pnpm debug",
-    "dev": "pnpm ts && pnpm copy && pnpm start",
-    "debug": "cross-env DEBUG=true pnpm start",
-    "cleanup": "shx rm -rf dist/*",
-    "clean-data": "shx rm -rf dist/data/*",
-    "build": "pnpm ts && pnpm copy && pkg . --no-bytecode --public-packages \"*\" --public && pnpm cleanup"
+    "dev-debug": "cross-env DEBUG=true ts-node src/main.ts",
+    "dev-trace": "cross-env TRACE=true ts-node src/main.ts",
+    "dev": "ts-node src/main.ts",
+    "ts": "pnpm run cleanup && tsc",
+    "prisma": "prisma db push",
+    "pkg": "pnpm run ts && pkg . --no-bytecode --public-packages \"*\" --public",
+    "cleanup": "shx rm -rf dist/* && shx rm -rf build/*",
+    "bundle": "ts-node bundleBuilds.ts",
+    "ci": "pnpm run pkg && pnpm run bundle"
   },
   "pkg": {
     "scripts": "dist/**/*.js",
-    "assets": "dist/data/**/*.csv",
+    "assets": [
+      "dist/**/*",
+      "node_modules/.pnpm/better-sqlite3@8.5.1/node_modules/better-sqlite3/build/Release/better_sqlite3.node"
+    ],
     "targets": [
-      "node14-win-x64",
-      "node14-linux-x64"
+      "node18-win-x64",
+      "node18-linux-x64"
     ],
     "outputPath": "build"
   },
@@ -27,16 +30,23 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "csv-parse": "^5.4.0",
+    "@types/archiver": "^5.3.2",
+    "archiver": "^6.0.0",
+    "better-sqlite3": "^8.5.1",
     "kleur": "^4.1.5",
-    "prompts": "^2.4.2"
+    "kysely": "^0.26.1",
+    "prompts": "^2.4.2",
+    "tslog": "^4.9.2"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.4",
     "@types/node": "^20.5.1",
     "@types/prompts": "^2.4.4",
     "cross-env": "^7.0.3",
     "pkg": "^5.8.1",
+    "prisma-kysely": "^1.6.0",
     "shx": "^0.3.4",
+    "ts-node": "^10.9.1",
     "typescript": "^5.1.6"
   }
 }

@@ -1,0 +1,103 @@
+model Enemy {
+    name        String              @id
+    /// @kyselyType('Ancient Hall' | 'Undertale' | 'X-Tale' | 'Outertale' | 'Underswap' | 'Underfell' | 'Main Menu')
+    location    String              @default("Ancient Hall")
+    level       Int                 @default(1)
+    timelines   Int                 @default(0)
+    dust        Int                 @default(1)
+    gems        Int                 @default(0)
+    drops       EnemyDroppedItems[] @relation("EnemyDrops")
+    boss        Boolean             @default(true) @map("is_boss")
+    survival    Boolean             @default(false) @map("is_survival")
+    rng         Boolean             @default(false) @map("is_rng")
+    event       Boolean             @default(false) @map("is_event")
+    originEvent String?             @map("origin_event")
+    DLCRequired Boolean             @default(false) @map("is_dlc_required")
+
+    @@map("enemies")
+}
+
+model Item {
+    name          String
+    /// @kyselyType('Primary' | 'Secondary' | 'Extra')
+    slot          String              @default("Primary") @map("slot")
+    celestial     Boolean             @default(false) @map("is_celestial")
+    /// @kyseleyType('Nova' | 'Eclipse' | 'Heaven' | 'Healing' | 'Master' | 'Tem')
+    celestialType String?             @map("celestial_type")
+    obtainable    Boolean             @default(true) @map("is_obtainable")
+    event         Boolean             @default(false) @map("is_event")
+    /// @kyselyType('red_key_hunt')
+    originEvent   String?             @map("origin_event")
+    DLCRequired   Boolean             @default(false) @map("is_dlc_required")
+    golden        Boolean             @default(false) @map("is_golden")
+    originEnemies EnemyDroppedItems[] @relation("ItemDrops")
+    shops         ShopItems[]         @relation("ShopItems")
+    box           Box?                @relation("ItemBoxes")
+
+    @@id([name, slot])
+    @@map("items")
+}
+
+model Shop {
+    name     String      @id
+    items    ShopItems[] @relation("ShopItems")
+    /// @kyselyType('Ancient Hall' | 'Undertale' | 'X-Tale' | 'Outertale' | 'Underswap' | 'Underfell' | 'Timeline Room')
+    location String      @default("Undertale")
+
+    @@map("shops")
+}
+
+model Box {
+    item     Item   @relation("ItemBoxes", fields: [itemName, itemSlot], references: [name, slot])
+    itemName String @map("item_name")
+    /// @kyselyType('Primary' | 'Secondary' | 'Extra')
+    itemSlot String @map("item_slot")
+    /// @kyselyType('Ancient Hall' | 'Undertale' | 'X-Tale' | 'Outertale' | 'Underswap' | 'Underfell')
+    location String @default("Ancient Hall")
+
+    @@id([itemName, itemSlot])
+    @@map("boxes")
+}
+
+model ShopItems {
+    item     Item   @relation("ShopItems", fields: [itemName, itemSlot], references: [name, slot])
+    itemName String @map("item_name")
+    /// @kyselyType('Primary' | 'Secondary' | 'Extra')
+    itemSlot String @map("item_slot")
+    shop     Shop   @relation("ShopItems", fields: [shopName], references: [name])
+    shopName String @map("shop_name")
+    /// @kyselyType('gems' | 'super jumps')
+    currency String @default("gems")
+    price    Int    @default(1)
+
+    @@id([itemName, itemSlot, shopName])
+    @@map("shop_items")
+}
+
+model EnemyDroppedItems {
+    item          Item   @relation("ItemDrops", fields: [itemName, itemSlot], references: [name, slot])
+    itemName      String @map("item_name")
+    /// @kyselyType('Primary' | 'Secondary' | 'Extra')
+    itemSlot      String @map("item_slot")
+    enemy         Enemy  @relation("EnemyDrops", fields: [enemyName], references: [name])
+    enemyName     String @map("enemy_name")
+    dropChance    Float  @default(1) @map("drop_chance") // 0-1
+    dropAmountMin Int    @default(1) @map("drop_amount_min")
+    dropAmountMax Int    @default(1) @map("drop_amount_max")
+
+    @@id([itemName, enemyName])
+    @@map("enemy_drops")
+}
+
+datasource db {
+    provider = "sqlite"
+    url      = "file:../bosses.db"
+}
+
+generator kysely {
+    provider = "prisma-kysely"
+    // Optionally provide a destination directory for the generated file
+    // and a filename of your choice
+    output   = "../src/db"
+    fileName = "types.ts"
+}
